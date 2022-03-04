@@ -1,34 +1,27 @@
-#napa_wine_map 2.21.2022
-
 #1
-#import needed packages and assign variable geolocator
+#import pandas and import data into dataframe
 import pandas as pd
-from geopy.geocoders import Nominatim
 
-#Nominatim & OpenStreetMap
-geolocator = Nominatim(user_agent="wine mapping app", timeout=100000)
-
-#2
-#import data into dataframe
-df = pd.read_csv(r"C:\Users\straw\vipassanaecon projects\Medium Articles\python_wine_examples\napa_wine_full.csv",encoding= 'unicode_escape')
+#df = pd.read_csv(r"C:\napa_winery_list.csv", encoding= 'unicode_escape')
+df = pd.read_csv(r"https://raw.githubusercontent.com/vipassanaecon/wine_map/main/napa_winery_list.csv?token=GHSAT0AAAAAABRIA3AQ3LEICAFR2272OQJOYQW53CA", encoding= 'unicode_escape')
 df
 
-#3
+#2
 #create concatenated map_address column that can be used with geocode function
 df['map_address'] = df['Address'].astype(str) + ',' + \
                   df['City'] + ',' + 'CA'
 df.head()
 
-#4
-#drop P.O. Box addresses and assign dataframe to new copy variable
-#this will drop number of rows from 801 to 750 rows
-#we will need to use .copy() when filtering original dataframes
-#this is absolutely needed in order for process to work.
-#https://stackoverflow.com/questions/32573452/settingwithcopywarning-even-when-using-locrow-indexer-col-indexer-value
-
-new_df_copy = df[df["Address"].str.contains("P.O. Box")==False].copy() # drop P.O. Box addresses
-df = new_df_copy
+#3
+#drop P.O. Boxes
+df_copy = df[df["Address"].str.contains("P.O. Box")==False].copy() # drop P.O. Box addresses
+df = df_copy
 df
+
+#4
+from geopy.geocoders import Nominatim
+#Nominatim & OpenStreetMap
+geolocator = Nominatim(user_agent="wine map", timeout=10)
 
 #5
 from geopy.extra.rate_limiter import RateLimiter
@@ -40,16 +33,17 @@ geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 # some addresses cannot be geocoded (for unknown reason)
 # 2- - create location column
 df['location'] = df['map_address'].apply(geocode)
+df
 
 #7
 # create point column that lists latitude and longitude, altitude coordinates
-# 3 - create longitude, laatitude and altitude from location column (returns tuple)
+# 3 - create longitude, latitude and altitude from location column (returns tuple)
 df['point'] = df['location'].apply(lambda loc: tuple(loc.point) if loc else None)
 
 #8
 #drop locations that cannot be geocoded
-new_df_copy = df[df['point'].notna()].copy() #drop none locations
-df = new_df_copy
+df_copy = df[df['point'].notna()].copy() #drop none locations
+df = df_copy
 df
 
 #9
