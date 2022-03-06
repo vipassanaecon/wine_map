@@ -1,7 +1,7 @@
 #1
 import pandas as pd
 
-df = pd.read_csv(r"C:\Users\straw\vipassanaecon projects\Medium Articles\python_wine_examples\napa_wine_full.csv", encoding= 'unicode_escape')
+df = pd.read_csv(r"C:\napa_wine_full.csv", encoding= 'unicode_escape')
 df
 
 #2
