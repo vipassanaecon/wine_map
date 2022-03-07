@@ -58,5 +58,5 @@ map = folium.Map(
     tiles='cartodbpositron',
     zoom_start=12,
 )
-df.apply(lambda row:folium.CircleMarker(location=[row["Latitude"], row["Longitude"]], tooltip=row["Winery"], fill=True, color = 'red',  radius=3).add_to(map), axis=1)
+df.apply(lambda row:folium.CircleMarker(location=[row["Latitude"], row["Longitude"]], tooltip=row["Winery"], fill=True, color = 'red',  radius=1).add_to(map), axis=1)
 map
